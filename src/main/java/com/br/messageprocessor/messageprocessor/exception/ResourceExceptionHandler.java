@@ -11,6 +11,7 @@ public class ResourceExceptionHandler {
 
 
     public static final String OBJECT_NOT_FOUND = "Object not found";
+    public static final String ERROR_PROCESSING_MESSAGE = "Error processing message";
 
     @ExceptionHandler(ObjectNotFound.class)
     public ResponseEntity<StandardError<String>> objectNotFound(ObjectNotFound e, HttpServletRequest request) {
@@ -19,6 +20,17 @@ public class ResourceExceptionHandler {
                 System.currentTimeMillis(),
                 HttpStatus.NOT_FOUND.value(),
                 OBJECT_NOT_FOUND,
+                e.getMessage(),
+                request.getRequestURI()));
+    }
+
+    @ExceptionHandler(MessageProcessError.class)
+    public ResponseEntity<StandardError<String>> messageProcessError(MessageProcessError e, HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardError<>(
+                System.currentTimeMillis(),
+                HttpStatus.BAD_REQUEST.value(),
+                ERROR_PROCESSING_MESSAGE,
                 e.getMessage(),
                 request.getRequestURI()));
     }
