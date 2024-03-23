@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class StandardError<T> {
 
-    private Timestamp timestamp;
+    private Long timestamp;
     private Integer statusCode;
     private T error;
     private String message;

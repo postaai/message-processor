@@ -20,6 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findByUserId(String userId) {
-        return null;
+        return repository.findByUserId(userId).orElse(null);
     }
 }
