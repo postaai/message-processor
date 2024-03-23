@@ -4,6 +4,7 @@ import com.br.messageprocessor.messageprocessor.entity.UserEntity;
 import com.br.messageprocessor.messageprocessor.repository.UserEntityRepository;
 import com.br.messageprocessor.messageprocessor.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    @Autowired
     private UserEntityRepository repository;
     @Override
     public UserEntity save(UserEntity userEntity) {
