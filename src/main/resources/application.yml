@@ -1,2 +1,8 @@
+spring:
+    data:
+        mongodb:
+            uri: ${MONGO_URI:mongodb://localhost:27017}
+            database: ampla-database
+            auto-index-creation: true
 openAi:
     apiKey: ${OPEN_API_KEY}
