@@ -1,0 +1,2 @@
+openAi:
+    apiKey: ${OPEN_API_KEY}
