@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserEntityRepository repository;
-    @Override
-    public UserEntity save(UserEntity userEntity) {
+
+    private final UserEntityRepository repository;
+
+    public final UserEntity save(UserEntity userEntity) {
 
         return repository.save(userEntity);
     }

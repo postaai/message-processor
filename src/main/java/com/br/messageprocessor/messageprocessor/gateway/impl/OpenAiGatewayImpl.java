@@ -19,7 +19,7 @@ import java.util.List;
 public class OpenAiGatewayImpl implements OpenAiGateway {
 
    public static final String USER = "user";
-   private  OpenAiService openAiClient;
+   private final OpenAiService openAiClient;
 
 
    @Override

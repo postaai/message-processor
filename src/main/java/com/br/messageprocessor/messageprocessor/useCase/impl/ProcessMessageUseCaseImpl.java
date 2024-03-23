@@ -10,7 +10,6 @@ import com.br.messageprocessor.messageprocessor.useCase.dto.MessageUseCaseOutput
 import com.theokanning.openai.messages.Message;
 import com.theokanning.openai.runs.Run;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,10 +18,9 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ProcessMessageUseCaseImpl implements ProcessMessageUseCase {
-    @Autowired
-    private OpenAiGateway openAiGateway;
-    @Autowired
-    private UserService userService;
+
+    private final OpenAiGateway openAiGateway;
+    private final UserService userService;
 
     @Override
     public MessageUseCaseOutput process(MessageUseCaseInput messageUseCaseInput) {
@@ -31,11 +29,11 @@ public class ProcessMessageUseCaseImpl implements ProcessMessageUseCase {
         var user = userService.findByUserId(userId);
 
 
-        if (user == null) {
+        if (user != null) {
 
             openAiGateway.createMessage(user.getThreadId(), messageUseCaseInput.getMessage());
 
-            var run = openAiGateway.createRun(messageUseCaseInput.getUserId());
+            var run = openAiGateway.createRun(user.getThreadId());
 
             if (Objects.equals(checkStatus(run), StatusEnum.COMPLETED)) {
                 String messageText;
