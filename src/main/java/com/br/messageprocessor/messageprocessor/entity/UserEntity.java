@@ -20,4 +20,6 @@ public class UserEntity {
     private String userId;
 
     private String status;
+
+    private String threadId;
 }

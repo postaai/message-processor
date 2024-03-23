@@ -28,21 +28,13 @@ public class ProcessMessageUseCaseImpl implements ProcessMessageUseCase {
 
             if (user == null) {
                 var thread = openAiGateway.createThread();
-                userService.save(UserEntity.builder()
+                var newUser = userService.save(UserEntity.builder()
                         .userId(thread.getId()).build());
             }
 
-            openAiGateway.createMessage(messageUseCaseInput.getUserId(), messageUseCaseInput.getMessage());
+            openAiGateway.createMessage(user.getThreadId(), messageUseCaseInput.getMessage());
 
             var run = openAiGateway.createRun(messageUseCaseInput.getUserId());
-
-            return null;
-
-
-
-
-
-
 
 
 
