@@ -1,9 +1,11 @@
 package com.br.messageprocessor.messageprocessor.entity.Enum;
 
+import java.util.Objects;
+
 public enum StatusEnum {
     QUEUED(1, "queued"),
     IN_PROGRESS(2, "in_progress"),
-    requires_action(3, "requires_action"),
+    REQUIRES_ACTION(3, "requires_action"),
     CANCELING(4, "cancelling"),
     CANCELED(5, "cancelled"),
     FAILED(7, "failed"),
@@ -18,11 +20,21 @@ public enum StatusEnum {
         this.description = description;
     }
 
-    public static Integer getCode(){
-        return this.code;
+    public Integer getCode(){
+        return code;
     }
 
-    public static String getDescription(){
-        return this.description;
+    public String getDescription(){
+
+        return description;
+    }
+
+    public static StatusEnum fromCode(Integer code){
+        for(StatusEnum statusEnum : StatusEnum.values()){
+            if(Objects.equals(statusEnum.code, code)){
+                return statusEnum;
+            }
+        }
+        return null;
     }
 }
