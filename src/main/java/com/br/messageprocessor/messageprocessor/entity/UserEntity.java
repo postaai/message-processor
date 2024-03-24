@@ -22,4 +22,6 @@ public class UserEntity {
     private String status;
 
     private String threadId;
+
+    private String lastRunId;
 }

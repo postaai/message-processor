@@ -21,4 +21,5 @@ public interface OpenAiGateway {
     Run submitToolOutputs(String threadId, String runId, SubmitToolOutputsRequest toolOutputsRequest);
 
     List<Message> listMessages(String threadId);
+
 }

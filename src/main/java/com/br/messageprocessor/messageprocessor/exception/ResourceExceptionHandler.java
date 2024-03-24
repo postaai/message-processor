@@ -12,6 +12,7 @@ public class ResourceExceptionHandler {
 
     public static final String OBJECT_NOT_FOUND = "Object not found";
     public static final String ERROR_PROCESSING_MESSAGE = "Error processing message";
+    public static final String THREAD_IS_BUSY = "Thread is busy";
 
     @ExceptionHandler(ObjectNotFound.class)
     public ResponseEntity<StandardError<String>> objectNotFound(ObjectNotFound e, HttpServletRequest request) {
@@ -34,4 +35,16 @@ public class ResourceExceptionHandler {
                 e.getMessage(),
                 request.getRequestURI()));
     }
+
+    @ExceptionHandler(ThreadBusyException.class)
+    public ResponseEntity<StandardError<String>> threadBusyException(ThreadBusyException e, HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.PROCESSING).body(new StandardError<>(
+                System.currentTimeMillis(),
+                HttpStatus.PROCESSING.value(),
+                THREAD_IS_BUSY,
+                e.getMessage(),
+                request.getRequestURI()));
+    }
+
 }
