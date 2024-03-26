@@ -20,6 +20,8 @@ public class MessageControllerImpl implements MessageController {
     @Override
     public ResponseEntity<MessageResponse> processMessage(MessageRequest messageRequest) {
 
+        System.out.println("------- mensagem chegou no controller: " + messageRequest.getMessage());
+
         var messageUseCaseOutput = processMessageUseCase.process(MessageUseCaseInput
                 .builder()
                 .message(messageRequest.getMessage())

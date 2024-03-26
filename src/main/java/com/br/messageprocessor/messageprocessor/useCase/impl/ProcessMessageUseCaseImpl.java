@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +36,11 @@ public class ProcessMessageUseCaseImpl implements ProcessMessageUseCase {
         var user = userService.findByUserId(userId);
 
         if (user != null) {
-            if (!validateMessageUseCase.execute(ValidationMessageUseCaseInput.builder().userId(userId).build())) {
-                throw new ThreadBusyException();
-            }
+            System.out.println("------------------------> mensagem chegou no useCase: " + messageUseCaseInput.getMessage());
+//            if (!validateMessageUseCase.execute(ValidationMessageUseCaseInput.builder().userId(userId).build())) {
+//                System.out.println("------------------------> Thread is busy");
+//                throw new ThreadBusyException();
+//            }
             return processMessage(user, messageUseCaseInput);
         } else {
             var newUser = createThread(userId);
@@ -46,41 +49,61 @@ public class ProcessMessageUseCaseImpl implements ProcessMessageUseCase {
 
     }
 
-
     private MessageUseCaseOutput processMessage(UserEntity user, MessageUseCaseInput messageUseCaseInput) {
+        System.out.println("------------------------> Processando mensagem chegou no useCase: " + messageUseCaseInput.getMessage());
+
+        try {
+            System.out.println("------------------------> Creating message " + messageUseCaseInput.getMessage());
+            openAiGateway.createMessage(user.getThreadId(), messageUseCaseInput.getMessage());
+        } catch (OpenAiHttpException e) {
+            System.out.println("------------------------> Error creating message " + messageUseCaseInput.getMessage());
+            throw new ThreadBusyException();
+        }
+
+        System.out.println("------------------------> Error creating message " + messageUseCaseInput.getMessage());
 
 
-        System.out.println("------------------------>Creating message");
-        openAiGateway.createMessage(user.getThreadId(), messageUseCaseInput.getMessage());
-        System.out.println("------------------------>Creating run");
+        System.out.println("------------------------> Creating run " + messageUseCaseInput.getMessage());
         var run = openAiGateway.createRun(user.getThreadId());
-        System.out.println("------------------------>Run created");
-
+        System.out.println("------------------------> Run created " + messageUseCaseInput.getMessage());
 
         if (Objects.equals(checkStatus(run, user.getUserId()), StatusEnum.COMPLETED)) {
-            String messageText;
-            List<Message> messages = openAiGateway.listMessages(user.getThreadId());
-
-            var messageData = messages.stream().findFirst().get();
-
-
-            if (Objects.equals(messageData.getRole(), "assistant")) {
-                messageText = messageData.getContent().stream().findFirst().get().getText().getValue();
-                return MessageUseCaseOutput.builder().message(messageText).status(StatusEnum.COMPLETED.getDescription()).build();
-            }
-
+            System.out.println("------------------------> Getting message " + messageUseCaseInput.getMessage());
+            var lastAssistantMessage = listMessage(user.getThreadId(), 0).getContent().stream().findFirst().get().getText().getValue();
+            ;
+            return MessageUseCaseOutput.builder().message(lastAssistantMessage).status(StatusEnum.COMPLETED.getDescription()).build();
 
         } else {
             throw new MessageProcessError();
         }
-        return null;
     }
 
+    private Message listMessage(String threadId, Integer attempt) {
+
+        if (attempt > 5) {
+            throw new MessageProcessError();
+        }
+
+        try {
+            List<Message> messages = openAiGateway.listMessages(threadId);
+            var message = messages.stream().findFirst().get();
+            if (Objects.equals(message.getRole(), "user")) {
+                TimeUnit.SECONDS.sleep(1);
+                return listMessage(threadId, attempt + 1);
+            }
+            return messages.stream().findFirst().get();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new MessageProcessError();
+        }
+
+
+    }
 
     private StatusEnum checkStatus(Run run, String userId) {
 
         try {
-            Thread.sleep(1000);
+            TimeUnit.MILLISECONDS.sleep(1000);
 
             var retrieveRun = openAiGateway.retrieveRun(run.getThreadId(), run.getId());
 

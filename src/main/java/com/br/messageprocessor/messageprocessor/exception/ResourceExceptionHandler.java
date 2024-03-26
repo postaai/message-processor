@@ -39,9 +39,9 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(ThreadBusyException.class)
     public ResponseEntity<StandardError<String>> threadBusyException(ThreadBusyException e, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.PROCESSING).body(new StandardError<>(
+        return ResponseEntity.status(HttpStatus.TOO_EARLY).body(new StandardError<>(
                 System.currentTimeMillis(),
-                HttpStatus.PROCESSING.value(),
+                HttpStatus.TOO_EARLY.value(),
                 THREAD_IS_BUSY,
                 e.getMessage(),
                 request.getRequestURI()));
